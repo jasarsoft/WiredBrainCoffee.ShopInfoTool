@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using WiredBrainCoffee.DataAccess;
 
 namespace WiredBrainCoffee.ShopInfoTool
@@ -24,14 +25,11 @@ namespace WiredBrainCoffee.ShopInfoTool
 
                 var coffeeShops = coffeeShopDataProvider.LoadCoffeShops();
 
-                if (string.Equals("help", line, StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("> Available coffee shop commands:");
-                    foreach (var coffeeShop in coffeeShops)
-                    {
-                        Console.WriteLine($"> " + coffeeShop.Location);
-                    }
-                }
+                var commandHandler = string.Equals("help", line, StringComparison.OrdinalIgnoreCase)
+                    ? new HelpCommandHandler(coffeeShops) as ICommandHandler 
+                    :  new CoffeeShopCommandHandler(coffeeShops, line);
+             
+                commandHandler.HandleCommand();
             }
         }
     }
