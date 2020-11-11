@@ -25,38 +25,11 @@ namespace WiredBrainCoffee.ShopInfoTool
 
                 var coffeeShops = coffeeShopDataProvider.LoadCoffeShops();
 
-                if (string.Equals("help", line, StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("> Available coffee shop commands:");
-                    foreach (var coffeeShop in coffeeShops)
-                    {
-                        Console.WriteLine($"> " + coffeeShop.Location);
-                    }
-                }
-                else
-                {
-                    var foundCoffeShops = coffeeShops
-                        .Where(x => x.Location.StartsWith(line, StringComparison.OrdinalIgnoreCase)).ToList();
-
-                    if (foundCoffeShops.Count == 0)
-                    {
-                        Console.WriteLine($"> Command '{line}' not found");
-                    }
-                    else if (foundCoffeShops.Count == 1)
-                    {
-                        var coffeShop = foundCoffeShops.Single();
-                        Console.WriteLine($"> Location: {coffeShop.Location}");
-                        Console.WriteLine($"> Beans in stock: {coffeShop.BeansInStockInKg} kg");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"> Multiple matching coffee shop commands found:");
-                        foreach (var coffeeType in foundCoffeShops)
-                        {
-                            Console.WriteLine($"> {coffeeType.Location}");
-                        }
-                    }
-                }
+                var commandHandler = string.Equals("help", line, StringComparison.OrdinalIgnoreCase)
+                    ? new HelpCommandHandler(coffeeShops) as ICommandHandler 
+                    :  new CoffeeShopCommandHandler(coffeeShops, line);
+             
+                commandHandler.HandleCommand();
             }
         }
     }
